@@ -1,0 +1,29 @@
+services:
+  api:
+    build: .
+    image: audi-docker
+    container_name: inventory_api
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    volumes:
+      - .:/app # Sincroniza tu carpeta actual con /app en Docker
+      - /app/node_modules # Evita que Docker intente borrar tus librerías
+    depends_on: #primero levanta el db
+      - db
+    restart: unless-stopped #Si el contenedor se cae, docker lo reinicia
+
+  db:
+    image: postgres:15
+    container_name: inventory_db
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
